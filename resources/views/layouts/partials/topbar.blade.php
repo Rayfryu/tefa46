@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="py-1">
-                        <a href="#"
+                        <a href="{{ route('profile.edit') }}"
                            class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-300
                                   hover:bg-surface-700 hover:text-white transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

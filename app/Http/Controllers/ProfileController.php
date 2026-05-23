@@ -44,6 +44,11 @@ class ProfileController extends Controller
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
+        ],
+        // Ngatur message error
+        [
+            'password.current_password' => 'Password yang dimasukkan salah',
+            'password.required' => 'Password wajib diisi'
         ]);
 
         $user = $request->user();
