@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -26,15 +27,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->validated());
+
+        // Upload image
+        if ($request->hasFile('image')) {
+
+            // hapus foto lama
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            // simpan foto baru
+            $path = $request->file('image')->store('profiles', 'public');
+
+            $user->image = $path;
         }
 
-        $request->user()->save();
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
     /**
@@ -42,14 +60,17 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ],
-        // Ngatur message error
-        [
-            'password.current_password' => 'Password yang dimasukkan salah',
-            'password.required' => 'Password wajib diisi'
-        ]);
+        $request->validateWithBag(
+            'userDeletion',
+            [
+                'password' => ['required', 'current_password'],
+            ],
+            // Ngatur message error
+            [
+                'password.current_password' => 'Password yang dimasukkan salah',
+                'password.required' => 'Password wajib diisi'
+            ]
+        );
 
         $user = $request->user();
 

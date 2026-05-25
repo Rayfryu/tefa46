@@ -41,11 +41,19 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name'        => 'Siswa Demo',
+            'name'        => 'Siswa Demo 1',
             'email'       => 'siswa@tefa.sch.id',
             'password'    => Hash::make('password'),
             'role'        => UserRole::Siswa,
             'division_id' => 1,
+        ]);
+
+        User::create([
+            'name'        => 'Siswa Demo 2',
+            'email'       => 'siswa2@tefa.sch.id',
+            'password'    => Hash::make('password'),
+            'role'        => UserRole::Siswa,
+            'division_id' => 2,
         ]);
 
         User::create([

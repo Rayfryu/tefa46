@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Guru\DashboardController;
 use App\Http\Controllers\Guru\ProjectController;
 use App\Http\Controllers\Guru\ReviewController;
+use App\Http\Controllers\Guru\StudentController;
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -19,4 +20,7 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
     // Reviews
     Route::get('reviews',                          [ReviewController::class, 'index'])->name('reviews.index');
     Route::post('progresses/{progress}/review',    [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Students
+    Route::get('students', [StudentController::class, 'index'])->name('students.index');
 });
