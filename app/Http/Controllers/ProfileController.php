@@ -29,14 +29,19 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        // FITUR DELETE IMAGE LAMA & DIGANTI IMAGE BARU
+
+        // simpan path lama
+        $oldImage = $user->image;
+
         $user->fill($request->validated());
 
-        // Upload image
+        // Upload image baru
         if ($request->hasFile('image')) {
 
             // hapus foto lama
-            if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
             }
 
             // simpan foto baru
@@ -76,11 +81,33 @@ class ProfileController extends Controller
 
         Auth::logout();
 
+        //jika user hapus akun, maka foto profile kehapus
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
+        }
+
         $user->delete();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function destroyImage(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        // hapus file dari storage
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
+        }
+
+        // kosongkan kolom image di database
+        $user->image = null;
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'photo-deleted');
     }
 }
