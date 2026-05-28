@@ -28,7 +28,7 @@
             ['label' => 'Dashboard', 'icon' => 'grid', 'route' => 'siswa.dashboard'],
             ['label' => 'Project Saya', 'icon' => 'folder', 'route' => 'siswa.projects.index'],
             ['label' => 'Task Saya', 'icon' => 'check-square', 'route' => 'siswa.tasks.index'],
-            ['label' => 'Portfolio', 'icon' => 'award', 'route' => 'siswa.portfolio.index'],
+            ['label' => 'Portfolio', 'icon' => 'award', 'route' => 'siswa.portfolios.index'],
         ],
         'client' => [
             ['label' => 'Dashboard', 'icon' => 'grid', 'route' => 'client.dashboard'],
@@ -49,35 +49,40 @@
 @endphp
 
 <aside id="sidebar"
-    class="fixed top-0 left-0 h-full w-64 bg-surface-950 border-r border-surface-700/50
-              flex flex-col z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    class="fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200
+           flex flex-col z-30 transform -translate-x-full lg:translate-x-0
+           transition-transform duration-300 ease-in-out">
 
     {{-- Logo --}}
-    <div class="flex items-center gap-3 px-6 py-5 border-b border-surface-700/50">
-        <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+    <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-200">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm">
             <img src="{{ asset('images/logo_46.png') }}" alt="Menu" class="w-9 h-9 object-contain">
         </div>
         <div>
-            <h1 class="font-display font-bold text-white text-sm leading-tight">TEFA SMK</h1>
-            <p class="text-[10px] text-slate-500 leading-tight">Teaching Factory</p>
+            <h1 class="font-bold text-slate-900 text-sm leading-tight">TEFA SMK</h1>
+            <p class="text-[11px] text-slate-500 leading-tight">Teaching Factory</p>
         </div>
     </div>
 
     {{-- User Info --}}
-    <div class="px-4 py-4 border-b border-surface-700/50">
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-800/60">
+    <div class="px-4 py-4 border-b border-slate-200">
+        <div
+            class="flex items-center gap-3 p-3 rounded-xl
+                bg-blue-950/5 border border-blue-200/40
+                backdrop-blur-md shadow-sm">
             <div
-                class="w-9 h-9 rounded-xl bg-brand-500/20 border border-brand-500/30
-                        flex items-center justify-center text-brand-400 font-bold text-sm font-display flex-shrink-0">
+                class="w-10 h-10 rounded-lg bg-blue-100 border border-blue-200
+                       flex items-center justify-center text-blue-700 font-bold text-sm">
                 @if (auth()->user()->image)
-                    <img src="{{ asset('storage/' . auth()->user()->image) }}" class="w-8 h-8 rounded-lg object-cover">
+                    <img src="{{ asset('storage/' . auth()->user()->image) }}" class="w-9 h-9 rounded-md object-cover">
                 @else
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 @endif
             </div>
+
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-white truncate">{{ $userName }}</p>
-                <span class="text-[10px] font-medium px-2 py-0.5 rounded-full border {{ $roleColor }}">
+                <p class="text-sm font-semibold text-slate-900 truncate">{{ $userName }}</p>
+                <span class="text-[11px] font-medium text-blue-700">
                     {{ $userRole }}
                 </span>
             </div>
@@ -85,8 +90,10 @@
     </div>
 
     {{-- Navigation --}}
-    <nav class="flex-1 px-3 py-4 overflow-y-auto space-y-1 scrollbar-thin">
-        <p class="text-[10px] font-semibold text-slate-600 uppercase tracking-widest px-3 mb-3">Menu Utama</p>
+    <nav class="flex-1 px-3 py-4 overflow-y-auto space-y-1">
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-3 mb-3">
+            Menu Utama
+        </p>
 
         @foreach ($menus as $menu)
             @php
@@ -96,10 +103,9 @@
 
             @if ($routeExists)
                 <a href="{{ route($menu['route']) }}"
-                    class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
-                              {{ $isActive
-                                  ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
-                                  : 'text-slate-400 hover:text-white hover:bg-surface-800' }}">
+                    class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                           transition-all duration-200
+                           {{ $isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50' }}">
 
                     {{-- Icon --}}
                     <span class="w-5 h-5 flex-shrink-0">
@@ -112,34 +118,41 @@
                     <span>{{ $menu['label'] }}</span>
 
                     @if ($isActive)
-                        <span class="ml-auto w-1.5 h-1.5 rounded-full bg-white/60"></span>
+                        <span class="ml-auto w-1.5 h-1.5 rounded-full bg-white/80"></span>
                     @endif
                 </a>
             @else
                 <span
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                                 text-slate-600 cursor-not-allowed opacity-50">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                           text-slate-400 cursor-not-allowed opacity-60">
+
                     <span class="w-5 h-5 flex-shrink-0">
                         @include('layouts.partials.icons', ['icon' => $menu['icon'], 'active' => false])
                     </span>
+
                     <span>{{ $menu['label'] }}</span>
-                    <span class="ml-auto text-[9px] bg-surface-700 text-slate-500 px-1.5 py-0.5 rounded">soon</span>
+
+                    <span class="ml-auto text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
+                        soon
+                    </span>
                 </span>
             @endif
         @endforeach
     </nav>
 
     {{-- Logout --}}
-    <div class="px-3 py-4 border-t border-surface-700/50">
+    <div class="px-3 py-4 border-t border-slate-200">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                           text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200">
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                       text-slate-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200">
+
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
+
                 Keluar
             </button>
         </form>

@@ -12,10 +12,14 @@ return new class extends Migration {
     {
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('project_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('thumbnail')->nullable();
+            $table->json('links')->nullable();
+            $table->json('skills')->nullable();
+            $table->string('type')->nullable();
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();

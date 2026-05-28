@@ -13,8 +13,14 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role',
-        'phone', 'image', 'division_id', 'is_active',
+        'name',
+        'email',
+        'password',
+        'role',
+        'phone',
+        'image',
+        'division_id',
+        'is_active',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -30,10 +36,22 @@ class User extends Authenticatable
     }
 
     // Helper methods untuk cek role
-    public function isAdmin(): bool  { return $this->role === UserRole::Admin; }
-    public function isGuru(): bool   { return $this->role === UserRole::Guru; }
-    public function isSiswa(): bool  { return $this->role === UserRole::Siswa; }
-    public function isClient(): bool { return $this->role === UserRole::Client; }
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+    public function isGuru(): bool
+    {
+        return $this->role === UserRole::Guru;
+    }
+    public function isSiswa(): bool
+    {
+        return $this->role === UserRole::Siswa;
+    }
+    public function isClient(): bool
+    {
+        return $this->role === UserRole::Client;
+    }
 
     // Relationships
     public function division()
@@ -59,5 +77,10 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function portfolios()
+    {
+        return $this->hasMany(Portfolio::class, 'student_id');
     }
 }
