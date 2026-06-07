@@ -9,8 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
     protected $fillable = [
-        'order_id', 'title', 'description', 'division_id',
-        'pic_guru_id', 'status', 'start_date', 'end_date', 'progress',
+        'order_id',
+        'title',
+        'description',
+        'division_id',
+        'pic_guru_id',
+        'status',
+        'start_date',
+        'end_date',
+        'progress',
     ];
 
     protected function casts(): array
@@ -23,17 +30,42 @@ class Project extends Model
         ];
     }
 
-    public function order()      { return $this->belongsTo(Order::class); }
-    public function division()   { return $this->belongsTo(Division::class); }
-    public function picGuru()    { return $this->belongsTo(User::class, 'pic_guru_id'); }
-    public function tasks()      { return $this->hasMany(Task::class); }
-    public function portfolio()  { return $this->hasOne(Portfolio::class); }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
+    }
+    public function picGuru()
+    {
+        return $this->belongsTo(User::class, 'pic_guru_id');
+    }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+    public function portfolio()
+    {
+        return $this->hasOne(Portfolio::class);
+    }
 
     public function members()
     {
         return $this->belongsToMany(User::class, 'project_members', 'project_id', 'student_id')
-                    ->withPivot('role_in_project', 'joined_at')
-                    ->withTimestamps();
+            ->withPivot('role_in_project', 'joined_at')
+            ->withTimestamps();
+    }
+
+    public function deliverables()
+    {
+        return $this->hasMany(ProjectDeliverable::class);
+    }
+
+    public function finalDeliverables()
+    {
+        return $this->hasMany(ProjectDeliverable::class)->where('is_final', true);
     }
 
     // Auto-hitung progress dari task yang done

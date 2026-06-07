@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Models\Invoice;
 
 class OrderController extends Controller
 {
@@ -20,9 +21,11 @@ class OrderController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('client', fn($q) =>
+                    ->orWhereHas(
+                        'client',
+                        fn($q) =>
                         $q->where('name', 'like', '%' . $request->search . '%')
-                  );
+                    );
             });
         }
 
@@ -46,7 +49,7 @@ class OrderController extends Controller
 
     public function approve(Order $order)
     {
-        abort_if(!in_array($order->status->value, ['pending']), 403, 'Order tidak bisa diapprove.');
+        abort_if($order->status->value !== 'pending', 403);
 
         $order->update([
             'status'      => 'approved',
@@ -54,7 +57,10 @@ class OrderController extends Controller
             'approved_at' => now(),
         ]);
 
-        return back()->with('success', 'Order berhasil disetujui.');
+        // Redirect ke halaman buat invoice langsung
+        return redirect()
+            ->route('admin.orders.invoice', $order)
+            ->with('success', 'Order disetujui! Silakan buat invoice untuk client.');
     }
 
     public function reject(Request $request, Order $order)
@@ -78,4 +84,57 @@ class OrderController extends Controller
         $order->delete();
         return back()->with('success', 'Order berhasil dihapus.');
     }
+
+    public function createInvoice(Order $order)
+{
+    abort_if($order->status->value !== 'approved', 403);
+
+    // Cek sudah ada invoice belum
+    $existing = Invoice::where('order_id', $order->id)
+                       ->whereIn('status', ['unpaid', 'pending_confirmation', 'paid'])
+                       ->first();
+
+    if ($existing) {
+        return redirect()->route('admin.invoices.show', $existing)
+            ->with('error', 'Order ini sudah memiliki invoice aktif.');
+    }
+
+    $order->load('client', 'service');
+
+    return view('admin.orders.invoice', compact('order'));
+}
+
+public function storeInvoice(Request $request, Order $order)
+{
+    abort_if($order->status->value !== 'approved', 403);
+
+    $request->validate([
+        'amount'   => 'required|numeric|min:1000',
+        'tax'      => 'nullable|numeric|min:0|max:100',
+        'due_date' => 'required|date|after:today',
+        'note'     => 'nullable|string|max:500',
+    ]);
+
+    $amount = $request->amount;
+    $tax    = $request->tax ?? 0;
+    $total  = $amount + ($amount * $tax / 100);
+
+    Invoice::create([
+        'order_id'       => $order->id,
+        'project_id'     => null, // project belum ada, dibuat setelah bayar
+        'invoice_number' => Invoice::generateNumber(),
+        'amount'         => $amount,
+        'tax'            => $tax,
+        'total'          => $total,
+        'due_date'       => $request->due_date,
+        'status'         => 'unpaid',
+        'issued_by'      => auth()->id(),
+    ]);
+
+    // Update order status ke waiting_payment
+    $order->update(['status' => 'waiting_payment']);
+
+    return redirect()->route('admin.orders.index')
+        ->with('success', 'Invoice berhasil dikirim ke client! Menunggu pembayaran.');
+}
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\DeliverableController;
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -23,14 +24,18 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::resource('projects', ProjectController::class);
     Route::post('projects/{project}/members',         [ProjectController::class, 'addMember'])->name('projects.members.add');
-    Route::delete('projects/{project}/members/{user}',[ProjectController::class, 'removeMember'])->name('projects.members.remove');
+    Route::delete('projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.members.remove');
     Route::patch('projects/{project}/progress',       [ProjectController::class, 'updateProgress'])->name('projects.progress');
 
     Route::resource('projects.tasks', TaskController::class)->shallow();
+    Route::patch('projects/{project}/finalize', [DeliverableController::class, 'finalize'])->name('projects.finalize');
 
     // Invoices
     Route::resource('invoices', InvoiceController::class)->only(['index', 'show', 'store', 'destroy']);
     Route::post('projects/{project}/invoices',        [InvoiceController::class, 'store'])->name('projects.invoices.store');
+
+    Route::get('orders/{order}/invoice/create', [OrderController::class, 'createInvoice'])->name('orders.invoice');
+    Route::post('orders/{order}/invoice',       [OrderController::class, 'storeInvoice'])->name('orders.invoice.store');
 
     // Payments
     Route::get('payments',                            [PaymentController::class, 'index'])->name('payments.index');

@@ -23,22 +23,29 @@
         @csrf
 
         {{-- Link ke Order --}}
-        <div>
-            <label class="block text-sm font-medium text-slate-300 mb-1.5">
-                Berdasarkan Order <span class="text-slate-500">(opsional)</span>
-            </label>
-            <select name="order_id"
-                    class="w-full px-4 py-2.5 bg-surface-700 border border-surface-600 text-slate-300
-                           text-sm rounded-xl focus:outline-none focus:border-brand-500 transition-colors">
-                <option value="">— Project mandiri (tanpa order) —</option>
-                @foreach($orders as $order)
-                <option value="{{ $order->id }}" {{ old('order_id') == $order->id ? 'selected' : '' }}>
-                    {{ $order->title }} — {{ $order->client->name }}
-                </option>
-                @endforeach
-            </select>
-        </div>
-
+    
+<div>
+    <label class="block text-sm font-medium text-slate-300 mb-1.5">
+        Berdasarkan Order
+        <span class="text-slate-500">(hanya order yang sudah dibayar)</span>
+    </label>
+    <select name="order_id"
+            class="w-full px-4 py-2.5 bg-surface-700 border border-surface-600 text-slate-300
+                   text-sm rounded-xl focus:outline-none focus:border-brand-500 transition-colors">
+        <option value="">— Project mandiri (tanpa order) —</option>
+        @foreach($orders as $order)
+        <option value="{{ $order->id }}"
+                {{ old('order_id', $selectedOrderId ?? '') == $order->id ? 'selected' : '' }}>
+            ✅ {{ $order->title }} — {{ $order->client->name }}
+        </option>
+        @endforeach
+    </select>
+    @if($orders->isEmpty())
+    <p class="text-amber-400 text-xs mt-1.5">
+        ⚠️ Belum ada order yang sudah dibayar. Konfirmasi pembayaran terlebih dahulu.
+    </p>
+    @endif
+</div>
         {{-- Judul --}}
         <div>
             <label class="block text-sm font-medium text-slate-300 mb-1.5">

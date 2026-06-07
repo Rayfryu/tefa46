@@ -36,19 +36,22 @@ class ProjectController extends Controller
         return view('admin.projects.index', compact('projects', 'stats'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // Hanya order yang sudah diapprove & belum punya project
-        $orders    = Order::where('status', 'approved')
-                          ->doesntHave('project')
-                          ->with('client')
-                          ->get();
+        // Hanya order yang sudah PAID & belum punya project
+        $orders = Order::where('status', 'paid')
+            ->doesntHave('project')
+            ->with('client')
+            ->get();
+
         $gurus     = User::where('role', 'guru')->where('is_active', true)->get();
         $divisions = Division::where('is_active', true)->get();
 
-        return view('admin.projects.create', compact('orders', 'gurus', 'divisions'));
-    }
+        // Pre-select order jika dari redirect konfirmasi bayar
+        $selectedOrderId = $request->order_id;
 
+        return view('admin.projects.create', compact('orders', 'gurus', 'divisions', 'selectedOrderId'));
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -78,8 +81,14 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $project->load([
-            'order.client', 'picGuru', 'division',
-            'members', 'tasks.assignedTo', 'tasks.latestProgress',
+            'order.client',
+            'picGuru',
+            'division',
+            'members',
+            'tasks.assignedTo',
+            'tasks.latestProgress',
+            'deliverables.uploadedBy', // ← tambahkan ini
+            'finalDeliverables',       // ← tambahkan ini
         ]);
 
         $availableSiswa = User::where('role', 'siswa')

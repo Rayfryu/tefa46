@@ -40,20 +40,17 @@ class PaymentController extends Controller
             'confirmed_at' => now(),
         ]);
 
-        // Update status invoice jadi paid
+        // Update invoice jadi paid
         $payment->invoice->update(['status' => 'paid']);
 
-        // Update status order jadi done
+        // Update order status jadi paid — siap dikerjakan
         if ($payment->invoice->order) {
-            $payment->invoice->order->update(['status' => 'done']);
+            $payment->invoice->order->update(['status' => 'paid']);
         }
 
-        // Update project jadi completed
-        if ($payment->invoice->project) {
-            $payment->invoice->project->update(['status' => 'completed', 'progress' => 100]);
-        }
-
-        return back()->with('success', 'Pembayaran dikonfirmasi. Project ditandai selesai! ✅');
+        return redirect()
+            ->route('admin.projects.create', ['order_id' => $payment->invoice->order_id])
+            ->with('success', 'Pembayaran dikonfirmasi! Silakan buat project untuk order ini. ✅');
     }
 
     public function reject(Request $request, Payment $payment)

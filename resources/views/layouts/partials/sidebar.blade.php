@@ -35,6 +35,7 @@
             ['label' => 'Buat Order', 'icon' => 'plus-circle', 'route' => 'client.orders.create'],
             ['label' => 'Order Saya', 'icon' => 'shopping-cart', 'route' => 'client.orders.index'],
             ['label' => 'Invoice', 'icon' => 'file-text', 'route' => 'client.invoices.index'],
+            ['label' => 'Hasil Project', 'icon' => 'award', 'route' => 'client.projects.index'], // ← tambah
         ],
         default => [],
     };

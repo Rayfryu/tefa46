@@ -6,6 +6,9 @@ use App\Http\Controllers\Guru\DashboardController;
 use App\Http\Controllers\Guru\ProjectController;
 use App\Http\Controllers\Guru\ReviewController;
 use App\Http\Controllers\Guru\StudentController;
+use App\Http\Controllers\Guru\DeliverableController;
+
+
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -23,4 +26,9 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
 
     // Students
     Route::get('students', [StudentController::class, 'index'])->name('students.index');
+
+      // Deliverables
+    Route::post('projects/{project}/deliverables',        [DeliverableController::class, 'store'])->name('projects.deliverables.store');
+    Route::delete('deliverables/{deliverable}',           [DeliverableController::class, 'destroy'])->name('deliverables.destroy');
+    Route::patch('projects/{project}/complete',           [DeliverableController::class, 'markComplete'])->name('projects.complete');
 });
