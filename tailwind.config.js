@@ -1,16 +1,12 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
+// tailwind.config.js
 import flowbite from 'flowbite/plugin'
 
-/** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
-        'node_modules/flowbite/**/*.js' 
+        './resources/**/*.blade.php',
+        './resources/**/*.js',
+        'node_modules/flowbite/**/*.js'
     ],
-    darkMode: 'class',
     theme: {
         extend: {
             fontFamily: {
@@ -19,33 +15,32 @@ export default {
                 mono:    ['JetBrains Mono', 'monospace'],
             },
             colors: {
-                primary: {
+                brand: {
                     50:  '#eef2ff',
+                    100: '#e0e7ff',
+                    400: '#818cf8',
                     500: '#6366f1',
                     600: '#4f46e5',
                     700: '#4338ca',
                 },
                 surface: {
-                    900: '#0F172A',
-                    800: '#1E293B',
-                    700: '#334155',
+                    50:  '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b',
                 }
             },
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-            },
-             animation: {
+            animation: {
                 'fade-in':    'fadeIn 0.4s ease forwards',
                 'slide-in':   'slideIn 0.3s ease forwards',
-                'pulse-slow': 'pulse 3s infinite',
             },
-             keyframes: {
+            keyframes: {
                 fadeIn:  { from: { opacity: 0, transform: 'translateY(8px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
                 slideIn: { from: { opacity: 0, transform: 'translateX(-12px)' }, to: { opacity: 1, transform: 'translateX(0)' } },
             }
         },
     },
-
-    plugins: [forms],
     plugins: [flowbite],
-};
+}
